@@ -7,7 +7,10 @@ public class Painter : MonoBehaviour
     private LineRenderer line;
     private List<Vector3> positions;
 
+
+
     [SerializeField] private Material lineColor;
+    [SerializeField] private Player player;
 
     private float xLimitMax = 2.5f;
     private float xLimitMin = -2.5f;
@@ -20,21 +23,23 @@ public class Painter : MonoBehaviour
 
         Debug.Log(Camera.main.ScreenToWorldPoint(Input.mousePosition));
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        
-            if (Input.GetMouseButtonDown(0) && ((mousePos.x >= xLimitMin && mousePos.x <= xLimitMax) && (mousePos.y <= yLimitMin && mousePos.y >= yLimitMax)))
-            {
 
-                StartCoroutine(painter());
-            }
-            else if (Input.GetMouseButtonUp(0) || !((mousePos.x >= xLimitMin && mousePos.x <= xLimitMax) && (mousePos.y <= yLimitMin && mousePos.y >= yLimitMax)))
-            {
+        if (Input.GetMouseButtonDown(0) && ((mousePos.x >= xLimitMin && mousePos.x <= xLimitMax) && (mousePos.y <= yLimitMin && mousePos.y >= yLimitMax)))
+        {
 
-                StopCoroutine(painter());
-                StartCoroutine(eraser());
-                StopCoroutine(eraser());
+            StartCoroutine(painter());
+        }
+        else if (Input.GetMouseButtonUp(0) || !((mousePos.x >= xLimitMin && mousePos.x <= xLimitMax) && (mousePos.y <= yLimitMin && mousePos.y >= yLimitMax)))
+        {
 
-            }
-        
+            StopCoroutine(painter());
+            if (positions != null && !player.hasLeg)
+                player.setLegPosCells(positions);
+            StartCoroutine(eraser());
+            StopCoroutine(eraser());
+
+        }
+
     }
 
 
@@ -48,6 +53,7 @@ public class Painter : MonoBehaviour
         line.startWidth = 0.1f;
         line.endWidth = 0.1f;
         line.material = lineColor;
+        player.hasLeg =false;
 
         while (Input.GetMouseButton(0) && line != null)
         {
