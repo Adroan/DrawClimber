@@ -26,7 +26,7 @@ public class Player : MonoBehaviour
 
         foreach (Vector3 pos in posCells)
         {
-            posCellsInLeg.Add(new Vector3(pos.x, pos.y + 1, 0));
+            posCellsInLeg.Add(new Vector3(pos.x - transform.position.x, pos.y + 1, 0));
         }
 
 
@@ -36,11 +36,11 @@ public class Player : MonoBehaviour
             cel.transform.SetParent(leg.transform);
         }
 
-        Rleg = Instantiate(leg,transform.Find("RightLeg").transform.position, Quaternion.identity);
+        Rleg = Instantiate(leg,transform.Find("RightLeg").transform.position, Quaternion.Euler(0,0,0));
         Rleg.transform.SetParent(transform.Find("RightLeg").transform);
         Rleg.transform.rotation = Quaternion.Euler(0,0,0) ;
         Rleg.transform.name = "Rleg";
-        Lleg = Instantiate(leg, transform.Find("LeftLeg").transform.position, Quaternion.identity);
+        Lleg = Instantiate(leg, transform.Find("LeftLeg").transform.position,  Quaternion.Euler(0,0,-180));
         Lleg.transform.SetParent(transform.Find("LeftLeg").transform);
         Lleg.transform.name ="Lleg";
 

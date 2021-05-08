@@ -24,12 +24,12 @@ public class Painter : MonoBehaviour
         Debug.Log(Camera.main.ScreenToWorldPoint(Input.mousePosition));
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-        if (Input.GetMouseButtonDown(0) && ((mousePos.x >= xLimitMin && mousePos.x <= xLimitMax) && (mousePos.y <= yLimitMin && mousePos.y >= yLimitMax)))
+        if (Input.GetMouseButtonDown(0) && ((mousePos.x >= xLimitMin + transform.position.x && mousePos.x <= xLimitMax + transform.position.x) && (mousePos.y <= yLimitMin + transform.position.y && mousePos.y >= yLimitMax+ transform.position.y)))
         {
 
             StartCoroutine(painter());
         }
-        else if (Input.GetMouseButtonUp(0) || !((mousePos.x >= xLimitMin && mousePos.x <= xLimitMax) && (mousePos.y <= yLimitMin && mousePos.y >= yLimitMax)))
+        else if (Input.GetMouseButtonUp(0) || !((mousePos.x >= xLimitMin + transform.position.x && mousePos.x <= xLimitMax+ transform.position.x) && (mousePos.y <= yLimitMin + transform.position.y && mousePos.y >= yLimitMax + transform.position.y)))
         {
 
             StopCoroutine(painter());
