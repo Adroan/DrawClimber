@@ -17,8 +17,8 @@ public class Player : MonoBehaviour
     public void setLegPosCells(List<Vector3> posCells)
     {
         if(Rleg != null && Lleg != null){
-            Destroy(transform.Find("Rleg").gameObject);
-            Destroy(transform.Find("Lleg").gameObject);
+            Destroy(Rleg);
+            Destroy(Lleg);
         }
 
         GameObject leg = new GameObject();
