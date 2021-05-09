@@ -13,7 +13,11 @@ public class Player : MonoBehaviour
     private GameObject Rleg = null;
     private GameObject Lleg = null;
 
-
+    // Resumo
+    // Da origem a perna do player
+    
+    //Parametros:
+    // Vetor com as posições x e y
     public void setLegPosCells(List<Vector3> posCells)
     {
         if(Rleg != null && Lleg != null){

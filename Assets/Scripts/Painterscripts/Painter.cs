@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//Resumo:
+// Classe responsável pelo desenho da linha 2D e a captura das posições dos pontos relativos a perna do player
 public class Painter : MonoBehaviour
 {
     private LineRenderer line;
@@ -14,51 +16,61 @@ public class Painter : MonoBehaviour
 
     private float xLimitMax = 2.5f;
     private float xLimitMin = -2.5f;
-
     private float yLimitMin = -1;
     private float yLimitMax = -4;
+
 
     void Update()
     {
         Debug.Log(Application.platform);
-        if(Application.platform == RuntimePlatform.Android){
-            if(Input.touchCount == 1){
-                Vector3 touchPos = Input.GetTouch(0).position;
-                if(Input.GetTouch(0).phase == TouchPhase.Began && ((touchPos.x >= xLimitMin + transform.position.x && touchPos.x <= xLimitMax + transform.position.x) && (touchPos.y <= yLimitMin + transform.position.y && touchPos.y >= yLimitMax+ transform.position.y))){
+        if (Application.platform == RuntimePlatform.Android || SystemInfo.deviceType == DeviceType.Handheld)
+        {
+            if (Input.touchCount == 1)
+            {
+                
+                Vector3 touchPos = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);
+                if ((Input.GetTouch(0).phase == TouchPhase.Began || Input.GetTouch(0).phase == TouchPhase.Moved || Input.GetTouch(0).phase == TouchPhase.Stationary) && ((touchPos.x >= xLimitMin + transform.position.x && touchPos.x <= xLimitMax + transform.position.x) && (touchPos.y <= yLimitMin + transform.position.y && touchPos.y >= yLimitMax + transform.position.y)))
+                {
                     StartCoroutine(painterAndroid());
-                }else if(Input.GetTouch(0).phase == TouchPhase.Ended || !((touchPos.x >= xLimitMin + transform.position.x && touchPos.x <= xLimitMax + transform.position.x) && (touchPos.y <= yLimitMin + transform.position.y && touchPos.y >= yLimitMax+ transform.position.y))){
+                }
+                else if (Input.GetTouch(0).phase == TouchPhase.Ended || !((touchPos.x >= xLimitMin + transform.position.x && touchPos.x <= xLimitMax + transform.position.x) && (touchPos.y <= yLimitMin + transform.position.y && touchPos.y >= yLimitMax + transform.position.y)))
+                {
                     StopCoroutine(painterAndroid());
-                    if(positions != null &&!player.hasLeg)
+                    if (positions != null && !player.hasLeg)
                         player.setLegPosCells(positions);
                     StartCoroutine(eraser());
                     StopCoroutine(eraser());
                 }
 
             }
-        }else if(Application.platform == RuntimePlatform.WebGLPlayer || Application.platform == RuntimePlatform.WindowsEditor){
-          Debug.Log(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        if (Input.GetMouseButtonDown(0) && ((mousePos.x >= xLimitMin + transform.position.x && mousePos.x <= xLimitMax + transform.position.x) && (mousePos.y <= yLimitMin + transform.position.y && mousePos.y >= yLimitMax+ transform.position.y)))
+        }
+        else if (Application.platform == RuntimePlatform.WebGLPlayer || Application.platform == RuntimePlatform.WindowsEditor)
         {
 
-            StartCoroutine(painterWeb());
-        }
-        else if (Input.GetMouseButtonUp(0) || !((mousePos.x >= xLimitMin + transform.position.x && mousePos.x <= xLimitMax+ transform.position.x) && (mousePos.y <= yLimitMin + transform.position.y && mousePos.y >= yLimitMax + transform.position.y)))
-        {
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            if (Input.GetMouseButtonDown(0) && ((mousePos.x >= xLimitMin + transform.position.x && mousePos.x <= xLimitMax + transform.position.x) && (mousePos.y <= yLimitMin + transform.position.y && mousePos.y >= yLimitMax + transform.position.y)))
+            {
 
-            StopCoroutine(painterWeb());
-            if (positions != null && !player.hasLeg)
-                player.setLegPosCells(positions);
-            StartCoroutine(eraser());
-            StopCoroutine(eraser());
+                StartCoroutine(painterWeb());
+            }
+            else if (Input.GetMouseButtonUp(0) || !((mousePos.x >= xLimitMin + transform.position.x && mousePos.x <= xLimitMax + transform.position.x) && (mousePos.y <= yLimitMin + transform.position.y && mousePos.y >= yLimitMax + transform.position.y)))
+            {
 
-        }  
+                StopCoroutine(painterWeb());
+                if (positions != null && !player.hasLeg)
+                    player.setLegPosCells(positions);
+                StartCoroutine(eraser());
+                StopCoroutine(eraser());
+
+            }
         }
-        
+
 
     }
-
-    IEnumerator painterAndroid(){
+    // Resumo
+    // Desenho da linha no Andoid
+    IEnumerator painterAndroid()
+    {
         line = new GameObject().AddComponent<LineRenderer>();
         line.transform.SetParent(transform);
         line.name = "leg";
@@ -66,19 +78,19 @@ public class Painter : MonoBehaviour
         line.startWidth = 0.1f;
         line.endWidth = 0.1f;
         line.material = lineColor;
-        player.hasLeg =false;
+        player.hasLeg = false;
 
-         while (Input.GetTouch(0).phase != TouchPhase.Ended && line != null)
+
+        while ((Input.GetTouch(0).phase == TouchPhase.Began || Input.GetTouch(0).phase == TouchPhase.Moved || Input.GetTouch(0).phase == TouchPhase.Stationary) && line != null)
         {
-            positions.Add(Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position) + Vector3.forward * 4.5f);
-            line.positionCount = positions.Count;
-            line.SetPositions(positions.ToArray());
+            lineDraw(Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position));
 
             yield return new WaitForSeconds(0);
 
         }
     }
-
+    // Resumo;
+    // Desenho da linha Browser
     IEnumerator painterWeb()
     {
         line = new GameObject().AddComponent<LineRenderer>();
@@ -88,22 +100,23 @@ public class Painter : MonoBehaviour
         line.startWidth = 0.1f;
         line.endWidth = 0.1f;
         line.material = lineColor;
-        player.hasLeg =false;
+        player.hasLeg = false;
+
 
         while (Input.GetMouseButton(0) && line != null)
         {
-            positions.Add(Camera.main.ScreenToWorldPoint(Input.mousePosition) + Vector3.forward * 4.5f);
-            line.positionCount = positions.Count;
-            line.SetPositions(positions.ToArray());
 
+            lineDraw(Camera.main.ScreenToWorldPoint(Input.mousePosition));
             yield return new WaitForSeconds(0);
 
         }
     }
 
+    //Resumo
+    // Apaga a liha
     IEnumerator eraser()
     {
-        if (transform.childCount > 0)
+        if (transform.childCount > 1)
         {
             GameObject leg = transform.Find("leg").gameObject;
             Destroy(leg);
@@ -111,8 +124,11 @@ public class Painter : MonoBehaviour
         }
     }
 
-    public List<Vector3> getPositions()
+
+    private void lineDraw(Vector3 pos)
     {
-        return positions;
+        positions.Add(pos + Vector3.forward * 4.5f);
+        line.positionCount = positions.Count;
+        line.SetPositions(positions.ToArray());
     }
 }
