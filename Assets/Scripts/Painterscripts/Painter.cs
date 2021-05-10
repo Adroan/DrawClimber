@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//Resumo:
-// Classe responsável pelo desenho da linha 2D e a captura das posições dos pontos relativos a perna do player
+/// <summary>
+/// Classe utilizada para denhar a linha no espaço alocado e gerar as posições para a criação da "perna" do player
+///</summary>
 public class Painter : MonoBehaviour
 {
     private LineRenderer line;
@@ -67,8 +68,9 @@ public class Painter : MonoBehaviour
 
 
     }
-    // Resumo
-    // Desenho da linha no Andoid
+    ///<summary>
+    /// Rotina responsável pela captura das posições do touch no android
+    ///</summary>
     IEnumerator painterAndroid()
     {
         line = new GameObject().AddComponent<LineRenderer>();
@@ -89,8 +91,9 @@ public class Painter : MonoBehaviour
 
         }
     }
-    // Resumo;
-    // Desenho da linha Browser
+    ///<summary>
+    /// Rotina responsável pela captura das posições do mouse no webgl
+    ///</summery>
     IEnumerator painterWeb()
     {
         line = new GameObject().AddComponent<LineRenderer>();
@@ -112,8 +115,7 @@ public class Painter : MonoBehaviour
         }
     }
 
-    //Resumo
-    // Apaga a liha
+
     IEnumerator eraser()
     {
         if (transform.childCount > 1)
@@ -124,7 +126,9 @@ public class Painter : MonoBehaviour
         }
     }
 
-
+    ///<summary>
+    /// Dado um vetor de posições <paramref name="pos"/> desenha a linha 
+    ///</summary>
     private void lineDraw(Vector3 pos)
     {
         positions.Add(pos + Vector3.forward * 4.5f);
